@@ -1,0 +1,23 @@
+{
+  "name": "getout",
+  "version": "0.0.1",
+  "description": "Get out",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.79.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sprusr/getout.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sprusr/getout/issues"
+  },
+  "homepage": "https://github.com/sprusr/getout#readme"
+}
