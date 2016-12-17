@@ -9,7 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "request": "^2.79.0"
+    "acr-cloud": "^0.1.4",
+    "request": "^2.79.0",
+    "spotify-web-api-node": "^2.3.6"
   },
   "devDependencies": {},
   "repository": {
