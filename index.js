@@ -26,8 +26,13 @@ var tracks = [];
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+var uuid = '';
 
 app.post('/', function (req, res) {
+  if(req.body.uuid) {
+    uuid = req.body.uuid;
+  }
+
   if (req.body.recording_url) {
     var jwt = nexmo.generateJwt();
     var bufs = [];
@@ -43,11 +48,31 @@ app.post('/', function (req, res) {
     }).on('end', function() {
       var buf = Buffer.concat(bufs);
 
-      acr.identify(buf).then(function(res) {
-        if(tracks.indexOf(JSON.parse(res.body).metadata.music[0].external_metadata.spotify.track.id) >= 0) {
-          console.log('Christmasy song!');
+      acr.identify(buf).then(function(acrRes) {
+        var jsonRes = JSON.parse(acrRes.body);
+        if(jsonRes.metadata) {
+          if(tracks.indexOf(jsonRes.metadata.music[0].title) >= 0) {
+            console.log('Christmasy song!');
+            nexmo.calls.talk.start(uuid, {
+              "text": "This room is acceptable"
+            }, function(err, res) {
+              console.log(err, res)
+            });
+          } else {
+            console.log('Run away');
+            nexmo.calls.talk.start(uuid, {
+              "text": "GET OUT"
+            }, function(err, res) {
+              console.log(err, res)
+            });
+          }
         } else {
-          console.log('Run away');
+          console.log('No songs detected');
+          nexmo.calls.talk.start(uuid, {
+            "text": "No sounds detected"
+          }, function(err, res) {
+            console.log(err, res)
+          });
         }
       });
     });
@@ -58,12 +83,12 @@ app.get('/ncco', function (req, res) {
   res.json([
     {
       "action": "talk",
-      "text": "Please leave a message after the tone, then press #. We will get back to you as soon as we can",
+      "text": "Please leave a message after the tone, then press #.",
       "voiceName": "Emma"
     }, {
       "action": "record",
       "eventUrl": [
-          "http://b09b8c93.ngrok.io/"
+          config.callbackUrl
       ],
       "endOnSilence": "3",
       "endOnKey" : "#",
@@ -71,20 +96,18 @@ app.get('/ncco', function (req, res) {
       "beepStart": "true"
     }, {
       "action": "talk",
-      "text": "Thank you for your message. Goodbye"
+      "text": " ",
+      "loop": 0
     }
   ]);
 });
 
 spotifyApi.clientCredentialsGrant().then(function(data) {
-  console.log('The access token expires in ' + data.body['expires_in']);
-  console.log('The access token is ' + data.body['access_token']);
-
   spotifyApi.setAccessToken(data.body['access_token']);
 
-  spotifyApi.getPlaylist('spotify', '3rjw5lJe4Yxd0ruERmNJ3s').then(function(data) {
+  spotifyApi.getPlaylist('spotify_uk_', '64Op0QGofJxCKeNUqWTKZg').then(function(data) {
     for(var i = 0; i < data.body.tracks.items.length; i++) {
-      tracks.push(data.body.tracks.items[i].track.id);
+      tracks.push(data.body.tracks.items[i].track.name);
     }
 
     app.listen(3000);
