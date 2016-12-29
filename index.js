@@ -61,7 +61,8 @@ app.post('/', function (req, res) {
           } else {
             console.log('Run away');
             nexmo.calls.talk.start(uuid, {
-              "text": "GET OUT"
+              "text": "GET OUT",
+              "loop": 0
             }, function(err, res) {
               console.log(err, res)
             });
@@ -69,7 +70,7 @@ app.post('/', function (req, res) {
         } else {
           console.log('No songs detected');
           nexmo.calls.talk.start(uuid, {
-            "text": "No sounds detected"
+            "text": "No songs detected"
           }, function(err, res) {
             console.log(err, res)
           });
@@ -83,7 +84,7 @@ app.get('/ncco', function (req, res) {
   res.json([
     {
       "action": "talk",
-      "text": "Please leave a message after the tone, then press #.",
+      "text": "We'll tell you whether to leave the room. Press # when ready.",
       "voiceName": "Emma"
     }, {
       "action": "record",
